@@ -1,0 +1,105 @@
+<!Doctype HTML>
+<html>
+    <head>
+        <title>Sign Up</title>
+        <link rel="stylesheet" href="main.css" />
+        <script>
+            const stateAbbrev = ["ak", "al", "ar", "az", "co", "ct", "de", "fl", "ga", "hi", "id", "il", "in", "ia", "ks", "ky", "la", "me", "md", "ma", "mi", "mn", "ms", "mo", "mt", "ne", "nv", "nh", "nj", "nm", "ny", "nc", "nd", "oh", "ok", "or", "pa", "ri", "sc", "sd", "tn", "tx", "ut", "vt", "va", "wa", "wv", "wy"];
+            const validNames = ["joe", "biden", "donald", "trump", "barack", "obama", "george", "bush", "bill", "clinton", "james", "jimmy", "carter"];
+
+            const specialCharRegex = /`|~|!|@|#|\$|%|\^%|&|\*|\(|\)|-|_|\+|=|{|\[|\]|}|\\|\||;|:|'|"|,|<|\.|>|\/|\?/g;
+            var prevPasswords = new Array();
+
+            function checkPassword() {
+                var pass = document.getElementById("password").value;
+
+                setCheckTest("twelveChars", pass.length >= 12);
+                setCheckTest("oneCapital", pass.match(/[A-Z]/g));
+                setCheckTest("oneNumber", pass.match(/[0-9]/g));
+                setCheckTest("oneSpecial", pass.match(specialCharRegex));
+                setCheckTest("noPrevious", !isPreviousPassword(pass));
+                setCheckTest("noYears", noYearsEnding(pass));
+                setCheckTest("validId", validLicense(pass));
+                setCheckTest("noStates", noStates(pass));
+                setCheckTest("noOverrides", noOverrides(pass));
+                setCheckTest("presidents", hasPresident(pass));
+                prevPasswords.push(pass);
+            }
+
+            function setCheckTest(elementId, condition) {
+                if (condition) {
+                    setElementValid(elementId);
+                }
+                else {
+                    setElementInvalid(elementId);
+                }
+            }
+
+            function setElementValid(id) {
+                document.getElementById(id).style.color = "initial";
+            }
+
+            function setElementInvalid(id) {
+                document.getElementById(id).style.color = "red";
+            }
+
+            function isPreviousPassword(pass) {
+                var test = false;
+                prevPasswords.forEach(element => {
+                    if (element.valueOf() === pass.valueOf()) test = true;
+                });
+                return test;
+            }
+
+            function noYearsEnding(pass) {
+                if (pass.length < 4) return true;
+                return !/([1-2]){1}([0-9]){3}/g.test(pass.substring(pass.length - 4));
+            }
+
+            // I got lazy with this one, it just checks for >= 9 chars and WDL
+            function validLicense(pass) {
+                return pass.toLowerCase().includes("wdl") && pass.length >= 9;
+            }
+
+            function noStates(pass) {
+                var test = false;
+                stateAbbrev.forEach(element => {
+                    if (pass.toLowerCase().includes(stateAbbrev)) test = true;
+                });
+                return test;
+            }
+
+            function noOverrides(pass) {
+                return !pass.toLowerCase().includes("979") || pass.length < 24;
+            }
+
+            function hasPresident(pass) {
+                var test = false;
+                validNames.forEach(element => {
+                    if (pass.toLowerCase().includes(element)) test = true;
+                });
+                return test;
+            }
+
+
+        </script>
+    </head>
+    <body>
+        <h1>Password Requirements:</h1>
+        <ul>
+            <li id="twelveChars">At least 12 characters long</li>
+            <li id="oneCapital">At least one capital letter</li>
+            <li id="oneNumber">At least one number</li>
+            <li id="oneSpecial">At least one special character (e.g. @, $, !, &)</li>
+            <li id="noPrevious">Cannot be a previously used password (refresh the page to reset this)</li>
+            <li id="noYears">Cannot end in a birth year (e.g. 1000 - 2999)</li>
+            <li id="validId">Must include with a valid Washington State Driver's License ID issued after 2018</li>
+            <li id="noStates">Cannot include state abbreviations</li>
+            <li id="noOverrides">Cannot include valid Fred Meyer Manager Overrides</li>
+            <li id="presidents">Must include the first or last name of any alive president of the United States</li>
+        </ul>
+        <form onsubmit="return false;">
+            <input id="password" type="password" onchange="checkPassword()" />
+        </form>
+    </body>
+</html>
