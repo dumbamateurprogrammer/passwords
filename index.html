@@ -62,9 +62,9 @@
             }
 
             function noStates(pass) {
-                var test = false;
+                var test = true;
                 stateAbbrev.forEach(element => {
-                    if (pass.toLowerCase().includes(stateAbbrev)) test = true;
+                    if (pass.toLowerCase().includes(stateAbbrev)) test = false;
                 });
                 return test;
             }
